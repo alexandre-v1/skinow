@@ -13,19 +13,28 @@
 //! purposes. If you want to move the player in a smoother way,
 //! consider using a [fixed timestep](https://github.com/bevyengine/bevy/blob/main/examples/movement/physics_in_fixed_timestep.rs).
 
-use bevy::{prelude::*, window::PrimaryWindow};
+use bevy::prelude::*;
 
-use crate::{AppSystems, PausableSystems};
+use crate::{AppSystems, IsLocal, PausableSystems};
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         Update,
-        (apply_movement, apply_screen_wrap)
+        apply_movement
             .chain()
             .in_set(AppSystems::Update)
             .in_set(PausableSystems),
     );
 }
+
+#[derive(Component, Clone, Default)]
+pub struct Speed(f32);
+
+pub const MIN_X_POS: f32 = 16.0;
+pub const MAX_X_POS: f32 = 320.0;
+
+pub const MIN_Y_POS: f32 = 32.0;
+pub const MAX_Y_POS: f32 = 80.0;
 
 /// These are the movement parameters for our character controller.
 /// For now, this is only used for a single player, but it could power NPCs or
@@ -53,27 +62,10 @@ impl Default for MovementController {
 
 fn apply_movement(
     time: Res<Time>,
-    mut movement_query: Query<(&MovementController, &mut Transform)>,
+    mut movement_query: Query<(&MovementController, &mut Transform), With<IsLocal>>,
 ) {
     for (controller, mut transform) in &mut movement_query {
         let velocity = controller.max_speed * controller.intent;
         transform.translation += velocity.extend(0.0) * time.delta_secs();
-    }
-}
-
-#[derive(Component, Reflect, Clone, Default)]
-#[reflect(Component)]
-pub struct ScreenWrap;
-
-fn apply_screen_wrap(
-    window: Single<&Window, With<PrimaryWindow>>,
-    mut wrap_query: Query<&mut Transform, With<ScreenWrap>>,
-) {
-    let size = window.size() + 256.0;
-    let half_size = size / 2.0;
-    for mut transform in &mut wrap_query {
-        let position = transform.translation.xy();
-        let wrapped = (position + half_size).rem_euclid(size) - half_size;
-        transform.translation = wrapped.extend(transform.translation.z);
     }
 }

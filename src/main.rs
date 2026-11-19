@@ -5,14 +5,17 @@
 
 mod asset_tracking;
 mod audio;
-mod demo;
 #[cfg(feature = "dev")]
 mod dev_tools;
+mod gameplay;
 mod menus;
 mod screens;
 mod theme;
 
 use bevy::{asset::AssetMetaCheck, prelude::*};
+use bevy_pixcam::{PixelCameraPlugin, PixelZoom};
+
+use crate::gameplay::lane::{LANE_X_CENTER, LANE_Y_CENTER};
 
 fn main() -> AppExit {
     App::new().add_plugins(AppPlugin).run()
@@ -40,14 +43,16 @@ impl Plugin for AppPlugin {
                     }
                     .into(),
                     ..default()
-                }),
-        );
+                })
+                .set(ImagePlugin::default_nearest()),
+        )
+        .add_plugins(PixelCameraPlugin);
 
         // Add other plugins.
         app.add_plugins((
             asset_tracking::plugin,
             audio::plugin,
-            demo::plugin,
+            gameplay::plugin,
             #[cfg(feature = "dev")]
             dev_tools::plugin,
             menus::plugin,
@@ -96,9 +101,17 @@ struct Pause(pub bool);
 #[derive(SystemSet, Copy, Clone, Eq, PartialEq, Hash, Debug)]
 struct PausableSystems;
 
+#[derive(Component, Clone, Copy, Default)]
+pub struct IsLocal;
+
 fn spawn_camera() -> impl Scene {
     bsn! {
         #Camera
         Camera2d
+        PixelZoom::FitSize {
+            width: 240,
+            height: 216,
+        }
+        Transform::from_xyz(LANE_X_CENTER, LANE_Y_CENTER, 0.0)
     }
 }

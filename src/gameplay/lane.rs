@@ -1,0 +1,75 @@
+use bevy::{prelude::*, sprite::Anchor};
+
+use crate::gameplay::{
+    parallax::{self, LayerInfo},
+    player,
+};
+
+pub fn plugin(_app: &mut App) {}
+
+pub const LANE_Y: f32 = 108.0;
+pub const LANE_Y_CENTER: f32 = LANE_Y / 2.0;
+
+pub const LANE_X: f32 = 240.0;
+pub const LANE_X_CENTER: f32 = LANE_X / 2.0;
+
+#[derive(Component, Clone, PartialEq, Eq, Debug, FromTemplate)]
+#[relationship(relationship_target = LaneEntities)]
+pub struct InLane(pub Entity);
+
+impl Default for InLane {
+    fn default() -> Self {
+        InLane(Entity::PLACEHOLDER)
+    }
+}
+
+#[derive(Component, Clone, PartialEq, Eq, Debug)]
+#[relationship_target(relationship = InLane)]
+pub struct LaneEntities(Vec<Entity>);
+
+pub fn scene() -> impl Scene {
+    bsn! {
+        #Lane
+        Visibility
+        Children [
+            InLane(#Lane)
+            @player::scene(400.0)
+            --
+            Sprite { image: "images/background.png" }
+            Anchor::BOTTOM_LEFT
+            Transform::from_xyz(0.0, 0.0, -100.0)
+            --
+            @parallax::layer(LayerInfo {
+                speed: 70.0,
+                z: 0.0,
+                y: 0.0,
+                image: "images/ground.png",
+                image_width: 240.0,
+            })
+            --
+            @parallax::layer(LayerInfo {
+                speed: 45.0,
+                z: -50.0,
+                y: 25.0,
+                image: "images/forest.png",
+                image_width: 240.0,
+            })
+            --
+            @parallax::layer(LayerInfo {
+                speed: 10.0,
+                z: -70.0,
+                y: 25.0,
+                image: "images/montain.png",
+                image_width: 240.0,
+            })
+            --
+            @parallax::layer(LayerInfo {
+                speed: 5.0,
+                z: -80.0,
+                y: 83.0,
+                image: "images/moon.png",
+                image_width: 300.0,
+            })
+        ]
+    }
+}

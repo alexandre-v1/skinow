@@ -1,6 +1,6 @@
 [package]
 name = "skinow"
-authors = ["Alexandre v1 <101522434+alexandre-v1@users.noreply.github.com>"]
+authors = ["Alexandre v1 alexandre-v1@pm.me"]
 version = "0.1.0"
 edition = "2024"
 
@@ -15,6 +15,7 @@ tracing = { version = "0.1", features = [
     "max_level_debug",
     "release_max_level_warn",
 ] }
+bevy_pixcam = "0.20"
 
 [target.wasm32-unknown-unknown.dependencies]
 getrandom = { version = "0.3", features = ["wasm_js"] }
@@ -29,6 +30,8 @@ dev = [
     "bevy/bevy_ui_debug",
     # Improve error messages coming from Bevy
     "bevy/track_location",
+
+    "bevy/debug"
 ]
 dev_native = [
     "dev",
