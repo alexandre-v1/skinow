@@ -1277,16 +1277,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bff34eb29ff4b8a8688bc7299f14fb6b597461ca80fec03ed7d22939ab33e48f"
 
 [[package]]
-name = "bevy_new_2d"
-version = "0.1.0"
-dependencies = [
- "bevy",
- "getrandom 0.3.4",
- "rand 0.9.5",
- "tracing",
-]
-
-[[package]]
 name = "bevy_pbr"
 version = "0.20.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4928,6 +4918,16 @@ name = "simdutf8"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e3a9fe34e3e7a50316060351f37187a3f546bce95496156754b601a5fa71b76e"
+
+[[package]]
+name = "skinow"
+version = "0.1.0"
+dependencies = [
+ "bevy",
+ "getrandom 0.3.4",
+ "rand 0.9.5",
+ "tracing",
+]
 
 [[package]]
 name = "skrifa"
