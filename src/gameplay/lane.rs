@@ -40,7 +40,7 @@ pub fn scene() -> impl Scene {
             Transform::from_xyz(0.0, 0.0, -100.0)
             --
             @parallax::layer(LayerInfo {
-                speed: 70.0,
+                speed: 85.0,
                 z: 0.0,
                 y: 0.0,
                 image: "images/ground.png",
@@ -51,7 +51,15 @@ pub fn scene() -> impl Scene {
                 speed: 45.0,
                 z: -50.0,
                 y: 25.0,
-                image: "images/forest.png",
+                image: "images/forest_back.png",
+                image_width: 240.0,
+            })
+            --
+            @parallax::layer(LayerInfo {
+                speed: 55.0,
+                z: -40.0,
+                y: 25.0,
+                image: "images/forest_front.png",
                 image_width: 240.0,
             })
             --
@@ -59,7 +67,7 @@ pub fn scene() -> impl Scene {
                 speed: 10.0,
                 z: -70.0,
                 y: 25.0,
-                image: "images/montain.png",
+                image: "images/mountain.png",
                 image_width: 240.0,
             })
             --
