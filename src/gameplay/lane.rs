@@ -1,11 +1,11 @@
 use bevy::{prelude::*, sprite::Anchor};
 
 use crate::{
-    IsLocal,
     gameplay::{
         parallax::{self, LayerInfo},
         player,
     },
+    IsLocal,
 };
 
 pub fn plugin(_app: &mut App) {}
@@ -16,7 +16,7 @@ pub const LANE_Y_CENTER: f32 = LANE_Y / 2.0;
 pub const LANE_X: f32 = 240.0;
 pub const LANE_X_CENTER: f32 = LANE_X / 2.0;
 
-pub const _MIN_X_POS: f32 = 16.0;
+pub const MIN_X_POS: f32 = 10.0;
 pub const _MAX_X_POS: f32 = 320.0;
 
 pub const MIN_Y_POS: f32 = 25.0;
@@ -47,7 +47,7 @@ pub fn scene(is_local: bool) -> impl Scene {
         @local_marker(is_local)
         Children [
             InLane(#Lane)
-            @player::scene(100.0)
+            @player::scene()
             @local_marker(is_local)
             --
             Sprite { image: "images/background.png" }

@@ -1,11 +1,14 @@
 use bevy::prelude::*;
 
-use crate::{gameplay::lane::MIN_Y_POS, AppSystems, IsLocal, PausableSystems};
+use crate::{
+    gameplay::lane::{MIN_X_POS, MIN_Y_POS},
+    AppSystems, IsLocal, PausableSystems,
+};
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         FixedUpdate,
-        (apply_movement, jump_physics)
+        (apply_movement, jump_physics, apply_drag)
             .chain()
             .in_set(AppSystems::Update)
             .in_set(PausableSystems),
@@ -17,6 +20,8 @@ const JUMP_SPEED: f32 = 200.0;
 const JUMP_CUT_MULT: f32 = 2.5;
 const FALL_MULT: f32 = 1.4;
 
+const DRAG: f32 = 20.0;
+
 #[derive(Component, Reflect, Clone)]
 #[reflect(Component)]
 pub struct MovementController {
@@ -27,6 +32,9 @@ pub struct MovementController {
     /// 1 world unit = 1 pixel when using the default 2D camera and no physics engine.
     pub max_speed: f32,
 }
+
+#[derive(Component, Default, Clone)]
+pub struct Dragable;
 
 #[derive(Component, Default, Clone)]
 pub struct JumpInput {
@@ -86,6 +94,16 @@ fn jump_physics(
             transform.translation.y = MIN_Y_POS;
             state.velocity_y = 0.0;
             state.grounded = true;
+        }
+    }
+}
+
+fn apply_drag(mut query: Query<&mut Transform, With<Dragable>>, time: Res<Time>) {
+    let dt = time.delta_secs();
+    for mut tf in &mut query {
+        tf.translation.x -= DRAG * dt;
+        if tf.translation.x <= MIN_X_POS {
+            tf.translation.x = MIN_X_POS
         }
     }
 }

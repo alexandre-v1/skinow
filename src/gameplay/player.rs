@@ -4,7 +4,7 @@ use crate::{
     asset_tracking::LoadResource,
     gameplay::{
         lane::MIN_Y_POS,
-        movement::{JumpInput, JumpState, MovementController},
+        movement::{Dragable, JumpInput, JumpState, MovementController},
     },
     AppSystems, IsLocal, PausableSystems,
 };
@@ -22,7 +22,7 @@ pub(super) fn plugin(app: &mut App) {
 }
 
 /// The player character.
-pub fn scene(max_speed: f32) -> impl Scene {
+pub fn scene() -> impl Scene {
     bsn! {
         #Player
         Player
@@ -32,10 +32,11 @@ pub fn scene(max_speed: f32) -> impl Scene {
         Anchor::BOTTOM_LEFT
         Transform::from_translation(Vec2::new(0.0, MIN_Y_POS).extend(0.0))
         MovementController {
-            max_speed,
+            max_speed: 100.0,
         }
         JumpState
         JumpInput
+        Dragable
     }
 }
 
