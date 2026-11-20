@@ -45,10 +45,12 @@ fn record_player_directional_input(
     // Collect directional input.
     let mut intent = Vec2::ZERO;
     if input.pressed(KeyCode::KeyW) || input.pressed(KeyCode::ArrowUp) {
-        intent.y += 1.0;
+        //intent.y += 1.0;
+        // Jump
     }
     if input.pressed(KeyCode::KeyS) || input.pressed(KeyCode::ArrowDown) {
-        intent.y -= 1.0;
+        //intent.y -= 1.0;
+        // Fall faster ?
     }
     if input.pressed(KeyCode::KeyA) || input.pressed(KeyCode::ArrowLeft) {
         intent.x -= 1.0;

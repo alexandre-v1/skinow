@@ -1,8 +1,11 @@
 use bevy::{prelude::*, sprite::Anchor};
 
-use crate::gameplay::{
-    parallax::{self, LayerInfo},
-    player,
+use crate::{
+    gameplay::{
+        parallax::{self, LayerInfo},
+        player,
+    },
+    IsLocal,
 };
 
 pub fn plugin(_app: &mut App) {}
@@ -36,14 +39,16 @@ pub struct LaneEntities(Vec<Entity>);
 #[derive(Component, Clone, Default)]
 pub struct Speed(f32);
 
-pub fn scene() -> impl Scene {
+pub fn scene(is_local: bool) -> impl Scene {
     bsn! {
         #Lane
         Speed(10.0)
         Visibility
+        @local_marker(is_local)
         Children [
             InLane(#Lane)
-            @player::scene(400.0)
+            @player::scene(100.0)
+            @local_marker(is_local)
             --
             Sprite { image: "images/background.png" }
             Anchor::BOTTOM_LEFT
@@ -99,4 +104,11 @@ pub fn scene() -> impl Scene {
 
         ]
     }
+}
+
+fn local_marker(is_local: bool) -> Box<dyn Scene> {
+    if is_local {
+        return Box::new(bsn! { IsLocal });
+    }
+    Box::new(bsn! {})
 }

@@ -44,11 +44,11 @@ pub fn spawn_level(
             Transform::from_translation(center.extend(100.0)).with_scale(Vec3::splat(8.0))
             Anchor::CENTER
             --
-            @lane::scene()
+            @lane::scene(true)
             IsLocal
             Transform::from_translation(Vec3::default().with_y(-LANE_Y_CENTER))
             --
-            @lane::scene()
+            @lane::scene(false)
             Transform::from_translation(Vec3::default().with_y(LANE_Y - LANE_Y_CENTER))
         ]
     });
