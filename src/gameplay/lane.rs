@@ -78,6 +78,15 @@ pub fn scene() -> impl Scene {
                 image: "images/moon.png",
                 image_width: 300.0,
             })
+            --
+            @parallax::layer(LayerInfo {
+                speed: 12.0,
+                z: -60.0,
+                y: 83.0,
+                image: "images/cloud.png",
+                image_width: 300.0,
+            })
+
         ]
     }
 }
