@@ -5,7 +5,10 @@ use bevy::{prelude::*, sprite::Anchor};
 use crate::{
     IsLocal,
     asset_tracking::LoadResource,
-    gameplay::lane::{self, LANE_Y, LANE_Y_CENTER},
+    gameplay::{
+        lane::{self, LANE_Y, LANE_Y_CENTER},
+        obstacle::Sequence,
+    },
     screens::Screen,
 };
 
@@ -30,6 +33,7 @@ pub fn spawn_level(
     _level_assets: Res<LevelAssets>,
     camera: Single<&GlobalTransform, With<Camera2d>>,
 ) {
+    commands.insert_resource(Sequence::default());
     let center: Vec2 = camera.translation().truncate();
     commands.spawn_scene(bsn! {
         #Level
