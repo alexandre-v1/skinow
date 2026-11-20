@@ -99,24 +99,18 @@ fn go_back(mut next_menu: ResMut<NextState<Menu>>) {
 
 #[derive(Resource, Asset, Clone, Reflect)]
 #[reflect(Resource)]
-struct CreditsAssets {
-    #[dependency]
-    music: Handle<AudioSource>,
-}
+struct CreditsAssets {}
 
 impl FromWorld for CreditsAssets {
     fn from_world(world: &mut World) -> Self {
-        let assets = world.resource::<AssetServer>();
-        Self {
-            music: assets.load("audio/music/Monkeys Spinning Monkeys.ogg"),
-        }
+        let _assets = world.resource::<AssetServer>();
+        Self {}
     }
 }
 
-fn start_credits_music(mut commands: Commands, credits_music: Res<CreditsAssets>) {
+fn start_credits_music(mut commands: Commands, _credits_music: Res<CreditsAssets>) {
     commands.spawn_scene(bsn! {
         #CreditsMusic
         DespawnOnExit<Menu>(Menu::Credits)
-        @music(credits_music.music.clone())
     });
 }
