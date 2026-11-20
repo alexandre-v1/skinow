@@ -13,6 +13,12 @@ pub const LANE_Y_CENTER: f32 = LANE_Y / 2.0;
 pub const LANE_X: f32 = 240.0;
 pub const LANE_X_CENTER: f32 = LANE_X / 2.0;
 
+pub const _MIN_X_POS: f32 = 16.0;
+pub const _MAX_X_POS: f32 = 320.0;
+
+pub const MIN_Y_POS: f32 = 25.0;
+pub const _MAX_Y_POS: f32 = 60.0;
+
 #[derive(Component, Clone, PartialEq, Eq, Debug, FromTemplate)]
 #[relationship(relationship_target = LaneEntities)]
 pub struct InLane(pub Entity);

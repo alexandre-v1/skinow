@@ -27,12 +27,6 @@ pub(super) fn plugin(app: &mut App) {
     );
 }
 
-pub const _MIN_X_POS: f32 = 16.0;
-pub const _MAX_X_POS: f32 = 320.0;
-
-pub const MIN_Y_POS: f32 = 32.0;
-pub const _MAX_Y_POS: f32 = 80.0;
-
 /// These are the movement parameters for our character controller.
 /// For now, this is only used for a single player, but it could power NPCs or
 /// other players as well.
