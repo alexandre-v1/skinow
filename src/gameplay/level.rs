@@ -3,10 +3,10 @@
 use bevy::{prelude::*, sprite::Anchor};
 
 use crate::{
+    IsLocal,
     asset_tracking::LoadResource,
     gameplay::lane::{self, LANE_Y, LANE_Y_CENTER},
     screens::Screen,
-    IsLocal,
 };
 
 pub(super) fn plugin(app: &mut App) {

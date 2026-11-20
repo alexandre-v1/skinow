@@ -1,11 +1,11 @@
 use bevy::{prelude::*, sprite::Anchor};
 
 use crate::{
+    IsLocal,
     gameplay::{
         parallax::{self, LayerInfo},
         player,
     },
-    IsLocal,
 };
 
 pub fn plugin(_app: &mut App) {}

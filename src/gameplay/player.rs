@@ -1,9 +1,9 @@
 use bevy::{prelude::*, sprite::Anchor};
 
 use crate::{
+    AppSystems, PausableSystems,
     asset_tracking::LoadResource,
     gameplay::{lane::MIN_Y_POS, movement::MovementController},
-    AppSystems, PausableSystems,
 };
 
 pub(super) fn plugin(app: &mut App) {
