@@ -1,52 +1,50 @@
-//! Handle player input and translate it into movement through a character
-//! controller. A character controller is the collection of systems that govern
-//! the movement of characters.
-//!
-//! In our case, the character controller has the following logic:
-//! - Set [`MovementController`] intent based on directional keyboard input.
-//!   This is done in the `player` module, as it is specific to the player
-//!   character.
-//! - Apply movement based on [`MovementController`] intent and maximum speed.
-//! - Wrap the character within the window.
-//!
-//! Note that the implementation used here is limited for demonstration
-//! purposes. If you want to move the player in a smoother way,
-//! consider using a [fixed timestep](https://github.com/bevyengine/bevy/blob/main/examples/movement/physics_in_fixed_timestep.rs).
-
 use bevy::prelude::*;
 
-use crate::{AppSystems, IsLocal, PausableSystems};
+use crate::{gameplay::lane::MIN_Y_POS, AppSystems, IsLocal, PausableSystems};
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
-        Update,
-        apply_movement
+        FixedUpdate,
+        (apply_movement, jump_physics)
             .chain()
             .in_set(AppSystems::Update)
             .in_set(PausableSystems),
     );
 }
 
-/// These are the movement parameters for our character controller.
-/// For now, this is only used for a single player, but it could power NPCs or
-/// other players as well.
+const GRAVITY: f32 = 400.0;
+const JUMP_SPEED: f32 = 200.0;
+const JUMP_CUT_MULT: f32 = 2.5;
+const FALL_MULT: f32 = 1.4;
+
 #[derive(Component, Reflect, Clone)]
 #[reflect(Component)]
 pub struct MovementController {
-    /// The direction the character wants to move in.
-    pub intent: Vec2,
+    /// The direction the character wants to move in (on axis x).
+    pub intent: f32,
 
     /// Maximum speed in world units per second.
     /// 1 world unit = 1 pixel when using the default 2D camera and no physics engine.
     pub max_speed: f32,
 }
 
+#[derive(Component, Default, Clone)]
+pub struct JumpInput {
+    pub pressed: bool,
+    pub held: bool,
+}
+
+#[derive(Component, Default, Clone)]
+pub struct JumpState {
+    pub velocity_y: f32,
+    pub grounded: bool,
+}
+
 impl Default for MovementController {
     fn default() -> Self {
         Self {
-            intent: Vec2::ZERO,
-            // 400 pixels per second is a nice default, but we can still vary this per character.
-            max_speed: 400.0,
+            intent: 0.0,
+            max_speed: 100.0,
         }
     }
 }
@@ -57,6 +55,37 @@ fn apply_movement(
 ) {
     for (controller, mut transform) in &mut movement_query {
         let velocity = controller.max_speed * controller.intent;
-        transform.translation += velocity.extend(0.0) * time.delta_secs();
+        transform.translation += Vec3::default().with_x(velocity) * time.delta_secs();
+    }
+}
+
+fn jump_physics(
+    time: Res<Time>,
+    mut query: Query<(&mut Transform, &mut JumpState, &mut JumpInput)>,
+) {
+    let dt = time.delta_secs();
+    for (mut transform, mut state, mut input) in &mut query {
+        if state.grounded && input.pressed {
+            state.velocity_y = JUMP_SPEED;
+            state.grounded = false;
+        }
+        input.pressed = false;
+
+        let gravity = if state.velocity_y > 0.0 && !input.held {
+            GRAVITY * JUMP_CUT_MULT
+        } else if state.velocity_y < 0.0 {
+            GRAVITY * FALL_MULT
+        } else {
+            GRAVITY
+        };
+
+        state.velocity_y -= gravity * dt;
+        transform.translation.y += state.velocity_y * dt;
+
+        if transform.translation.y <= MIN_Y_POS {
+            transform.translation.y = MIN_Y_POS;
+            state.velocity_y = 0.0;
+            state.grounded = true;
+        }
     }
 }
