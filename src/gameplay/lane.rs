@@ -27,9 +27,13 @@ impl Default for InLane {
 #[relationship_target(relationship = InLane)]
 pub struct LaneEntities(Vec<Entity>);
 
+#[derive(Component, Clone, Default)]
+pub struct Speed(f32);
+
 pub fn scene() -> impl Scene {
     bsn! {
         #Lane
+        Speed(10.0)
         Visibility
         Children [
             InLane(#Lane)

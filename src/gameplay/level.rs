@@ -4,7 +4,7 @@ use bevy::{prelude::*, sprite::Anchor};
 
 use crate::{
     asset_tracking::LoadResource,
-    gameplay::lane::{self, LANE_X_CENTER, LANE_Y, LANE_Y_CENTER},
+    gameplay::lane::{self, LANE_Y, LANE_Y_CENTER},
     screens::Screen,
     IsLocal,
 };

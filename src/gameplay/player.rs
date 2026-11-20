@@ -2,7 +2,7 @@ use bevy::{prelude::*, sprite::Anchor};
 
 use crate::{
     asset_tracking::LoadResource,
-    gameplay::movement::{MovementController, MIN_X_POS, MIN_Y_POS},
+    gameplay::movement::{MovementController, MIN_Y_POS},
     AppSystems, PausableSystems,
 };
 
