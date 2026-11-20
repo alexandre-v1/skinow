@@ -3,10 +3,7 @@ use bevy::{prelude::*, sprite::Anchor};
 use crate::{
     AppSystems, IsLocal, PausableSystems,
     asset_tracking::LoadResource,
-    gameplay::{
-        lane::MIN_Y_POS,
-        movement::{Dragable, JumpInput, JumpState, MovementController},
-    },
+    gameplay::movement::{Dragable, JumpInput, JumpState, MovementController},
 };
 
 pub(super) fn plugin(app: &mut App) {
@@ -21,6 +18,8 @@ pub(super) fn plugin(app: &mut App) {
     );
 }
 
+const START_POS_X: f32 = 20.0;
+
 /// The player character.
 pub fn scene() -> impl Scene {
     bsn! {
@@ -30,7 +29,7 @@ pub fn scene() -> impl Scene {
             image:  DINO,
         }
         Anchor::BOTTOM_LEFT
-        Transform::from_translation(Vec2::new(0.0, MIN_Y_POS).extend(0.0))
+        Transform::from_xyz(START_POS_X, 0.0, 0.0)
         MovementController {
             max_speed: 100.0,
         }

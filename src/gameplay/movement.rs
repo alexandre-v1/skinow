@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::{
     AppSystems, IsLocal, PausableSystems,
-    gameplay::lane::{MIN_X_POS, MIN_Y_POS},
+    gameplay::lane::{MAX_X_POS, MIN_X_POS, MIN_Y_POS},
 };
 
 pub(super) fn plugin(app: &mut App) {
@@ -64,6 +64,9 @@ fn apply_movement(
     for (controller, mut transform) in &mut movement_query {
         let velocity = controller.max_speed * controller.intent;
         transform.translation += Vec3::default().with_x(velocity) * time.delta_secs();
+        if transform.translation.x >= MAX_X_POS {
+            transform.translation.x = MAX_X_POS;
+        }
     }
 }
 
