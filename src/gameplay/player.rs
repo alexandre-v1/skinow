@@ -1,12 +1,12 @@
 use bevy::{prelude::*, sprite::Anchor};
 
 use crate::{
+    AppSystems, IsLocal, PausableSystems,
     asset_tracking::LoadResource,
     gameplay::{
         lane::MIN_Y_POS,
         movement::{Dragable, JumpInput, JumpState, MovementController},
     },
-    AppSystems, IsLocal, PausableSystems,
 };
 
 pub(super) fn plugin(app: &mut App) {
