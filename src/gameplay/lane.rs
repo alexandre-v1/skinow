@@ -1,12 +1,12 @@
 use bevy::{ecs::template::EntityTemplate, prelude::*, sprite::Anchor};
 
 use crate::{
-    IsLocal, PausableSystems,
     gameplay::{
         obstacle::{Obstacle, SequenceIndex},
         parallax::{self, LayerInfo},
         player,
     },
+    IsLocal, PausableSystems,
 };
 
 pub fn plugin(app: &mut App) {
@@ -59,7 +59,6 @@ impl InLaneTemplate {
         Self {
             lane: lane.into(),
             move_ratio: None,
-            ..default()
         }
     }
 
