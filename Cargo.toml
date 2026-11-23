@@ -50,10 +50,9 @@ default-features = false
 [package.metadata.bevy_cli.web]
 # Disable native features for web builds.
 default-features = false
-features = ["webgpu"]
 
 [package.metadata.bevy_cli.web.dev]
-features = ["dev", "webgpu"]
+features = ["dev"]
 
 
 [lints.rust]
