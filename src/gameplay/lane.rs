@@ -82,17 +82,17 @@ pub struct Speed(f32);
 #[derive(Component, Clone, Default, Deref, DerefMut)]
 pub struct Distance(f32);
 
-pub fn scene(is_local: bool) -> impl Scene {
+pub fn scene(is_local: bool, lane: Entity) -> impl Scene {
     bsn! {
         #Lane
-        Speed(85.0)
+        Speed(100.0)
         Distance
         Visibility
         SequenceIndex
         @local_marker(is_local)
         Children [
             InLane {
-                lane: #Lane
+                lane,
             }
             @player::scene()
             @local_marker(is_local)
@@ -101,54 +101,47 @@ pub fn scene(is_local: bool) -> impl Scene {
             Anchor::BOTTOM_LEFT
             Transform::from_xyz(0.0, 0.0, -100.0)
             --
-            @parallax::layer(LayerInfo {
-                speed: 85.0,
-                z: 0.0,
-                y: 0.0,
+            @parallax::infinite_layer(LayerInfo {
+                move_ratio: Some(1.0),
+                pos: Vec3::default(),
                 image: "images/ground.png",
-                image_width: 240.0,
-            })
+                lane,
+            }, 240.0)
             --
-            @parallax::layer(LayerInfo {
-                speed: 45.0,
-                z: -50.0,
-                y: 25.0,
+            @parallax::infinite_layer(LayerInfo {
+                move_ratio: Some(0.5),
+                pos: Vec3::new(0.0, 25.0, -50.0),
                 image: "images/forest_back.png",
-                image_width: 240.0,
-            })
+                lane,
+            }, 240.0)
             --
-            @parallax::layer(LayerInfo {
-                speed: 55.0,
-                z: -40.0,
-                y: 25.0,
+            @parallax::infinite_layer(LayerInfo {
+                move_ratio: Some(0.6),
+                pos: Vec3::new(0.0, 25.0, -40.0),
                 image: "images/forest_front.png",
-                image_width: 240.0,
-            })
+                lane,
+            }, 240.0)
             --
             @parallax::layer(LayerInfo {
-                speed: 10.0,
-                z: -70.0,
-                y: 25.0,
+                move_ratio : Some(0.10),
+                pos: Vec3::new(240.0, 25.0, -70.0),
                 image: "images/mountain.png",
-                image_width: 240.0,
+                lane,
             })
             --
             @parallax::layer(LayerInfo {
-                speed: 5.0,
-                z: -80.0,
-                y: 83.0,
+                move_ratio: Some(0.025),
+                pos: Vec3::new(230.0, 88.0, -80.0),
                 image: "images/moon.png",
-                image_width: 300.0,
+                lane,
             })
             --
-            @parallax::layer(LayerInfo {
-                speed: 12.0,
-                z: -60.0,
-                y: 83.0,
+            @parallax::infinite_layer(LayerInfo {
+                move_ratio: Some(0.2),
+                pos: Vec3::new(0.0, 83.0, -60.0),
                 image: "images/cloud.png",
-                image_width: 300.0,
-            })
-
+                lane,
+            }, 300.0)
         ]
     }
 }

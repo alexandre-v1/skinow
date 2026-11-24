@@ -35,25 +35,35 @@ pub fn spawn_level(
 ) {
     commands.insert_resource(Sequence::default());
     let center: Vec2 = camera.translation().truncate();
-    commands.spawn_scene(bsn! {
-        #Level
-        Transform
-        Visibility
-        DespawnOnExit<Screen>(Screen::Gameplay)
-        Children[
-            #Gameboy
-            Sprite {
-                image: "images/gameboy.png"
-            }
-            Transform::from_translation(center.extend(100.0)).with_scale(Vec3::splat(8.0))
-            Anchor::CENTER
-            --
-            @lane::scene(true)
-            IsLocal
-            Transform::from_translation(Vec3::default().with_y(-LANE_Y_CENTER))
-            --
-            @lane::scene(false)
-            Transform::from_translation(Vec3::default().with_y(LANE_Y - LANE_Y_CENTER))
-        ]
+
+    let lane_local = commands.spawn_empty().id();
+    let lane_other = commands.spawn_empty().id();
+
+    commands
+        .spawn_scene(bsn! {
+            #Level
+            Transform
+            Visibility
+            DespawnOnExit<Screen>(Screen::Gameplay)
+            Children[
+                #Gameboy
+                Sprite {
+                    image: "images/gameboy.png"
+                }
+                Transform::from_translation(center.extend(100.0)).with_scale(Vec3::splat(8.0))
+                Anchor::CENTER
+            ]
+        })
+        .add_children(&[lane_local, lane_other]);
+
+    commands.entity(lane_local).apply_scene(bsn! {
+        @lane::scene(true, lane_local)
+        IsLocal
+        Transform::from_translation(Vec3::default().with_y(-LANE_Y_CENTER))
+    });
+
+    commands.entity(lane_other).apply_scene(bsn! {
+        @lane::scene(false, lane_other)
+        Transform::from_translation(Vec3::default().with_y(LANE_Y - LANE_Y_CENTER))
     });
 }
