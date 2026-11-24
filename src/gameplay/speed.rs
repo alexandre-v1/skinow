@@ -22,7 +22,7 @@ pub struct Acceleration {
 #[derive(Clone)]
 pub enum Mod {
     Add(f32),
-    Mul(f32),
+    //Mul(f32),
 }
 
 impl Default for Mod {
@@ -35,7 +35,7 @@ impl Mod {
     fn apply(&self, value: f32) -> f32 {
         match self {
             Mod::Add(v) => value + v,
-            Mod::Mul(v) => value * v,
+            //Mod::Mul(v) => value * v,
         }
     }
 }
