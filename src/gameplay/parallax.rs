@@ -1,6 +1,6 @@
 use bevy::{prelude::*, sprite::Anchor};
 
-use crate::{PausableSystems, gameplay::lane::InLane};
+use crate::{gameplay::lane::InLane, PausableSystems};
 
 pub fn plugin(app: &mut App) {
     app.add_systems(Update, recycle_layer_segments.in_set(PausableSystems));

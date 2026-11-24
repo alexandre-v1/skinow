@@ -1,16 +1,16 @@
 use bevy::{prelude::*, sprite::Anchor};
 use rand::{
-    RngExt, SeedableRng,
-    distr::{Distribution, weighted::WeightedIndex},
+    distr::{weighted::WeightedIndex, Distribution},
     rngs::StdRng,
+    RngExt, SeedableRng,
 };
 
 use crate::{
-    PausableSystems,
     gameplay::{
         hitbox::Hitbox,
         lane::{Distance, InLane, MIN_Y_POS, SPAWN_AHEAD},
     },
+    PausableSystems,
 };
 
 pub fn plugin(app: &mut App) {

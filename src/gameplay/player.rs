@@ -1,9 +1,13 @@
 use bevy::{prelude::*, sprite::Anchor};
 
 use crate::{
-    AppSystems, IsLocal, PausableSystems,
     asset_tracking::LoadResource,
-    gameplay::movement::{Dragable, JumpInput, JumpState, MovementController},
+    gameplay::{
+        lane::{InLane, MAX_X_POS, MIN_X_POS},
+        movement::{Dragable, JumpInput, JumpState, MovementController},
+        speed::{self, RiskBoost},
+    },
+    AppSystems, IsLocal, PausableSystems,
 };
 
 pub(super) fn plugin(app: &mut App) {
@@ -16,9 +20,11 @@ pub(super) fn plugin(app: &mut App) {
             .in_set(AppSystems::RecordInput)
             .in_set(PausableSystems),
     );
+
+    app.add_systems(FixedUpdate, update_risk_boost.in_set(PausableSystems));
 }
 
-const START_POS_X: f32 = 20.0;
+const START_POS_X: f32 = 30.0;
 
 /// The player character.
 pub fn scene() -> impl Scene {
@@ -90,5 +96,24 @@ impl FromWorld for PlayerAssets {
         Self {
             _dino: assets.load(DINO),
         }
+    }
+}
+
+const MAX_RISK_BOOST: f32 = 10.0;
+
+fn update_risk_boost(
+    players: Query<(&Transform, &InLane), With<Player>>,
+    mut lanes: Query<&mut RiskBoost>,
+) {
+    for (transform, in_lane) in players {
+        let Ok(mut risk) = lanes.get_mut(in_lane.lane) else {
+            continue;
+        };
+
+        let x = transform.translation.x;
+        let t = ((x - MIN_X_POS) / (MAX_X_POS - MIN_X_POS)).clamp(0.0, 1.0);
+        let boost = MAX_RISK_BOOST * t;
+
+        **risk = speed::Mod::Add(boost);
     }
 }

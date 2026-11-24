@@ -1,12 +1,13 @@
 use bevy::{ecs::template::EntityTemplate, prelude::*, sprite::Anchor};
 
 use crate::{
-    IsLocal, PausableSystems,
     gameplay::{
         obstacle::{Obstacle, SequenceIndex},
         parallax::{self, LayerInfo},
         player,
+        speed::{Acceleration, ComputedSpeed, RiskBoost, Speed},
     },
+    IsLocal, PausableSystems,
 };
 
 pub fn plugin(app: &mut App) {
@@ -77,15 +78,17 @@ impl InLaneTemplate {
 pub struct LaneEntities(Vec<Entity>);
 
 #[derive(Component, Clone, Default, Deref, DerefMut)]
-pub struct Speed(f32);
-
-#[derive(Component, Clone, Default, Deref, DerefMut)]
 pub struct Distance(f32);
 
 pub fn scene(is_local: bool, lane: Entity) -> impl Scene {
     bsn! {
         #Lane
         Speed(100.0)
+        Acceleration {
+            up: 30.0,
+            down: 60.0,
+        }
+        RiskBoost
         Distance
         Visibility
         SequenceIndex
@@ -153,7 +156,7 @@ fn local_marker(is_local: bool) -> Box<dyn Scene> {
     Box::new(bsn! {})
 }
 
-fn update_distance(mut query: Query<(&mut Distance, &Speed)>, time: Res<Time>) {
+fn update_distance(mut query: Query<(&mut Distance, &ComputedSpeed)>, time: Res<Time>) {
     let dt = time.delta_secs();
     for (mut distance, speed) in &mut query {
         distance.0 += **speed * dt;
@@ -162,7 +165,7 @@ fn update_distance(mut query: Query<(&mut Distance, &Speed)>, time: Res<Time>) {
 
 fn move_in_lanes(
     in_lanes: Query<(&mut Transform, &InLane)>,
-    lanes: Query<&Speed, With<LaneEntities>>,
+    lanes: Query<&ComputedSpeed, With<LaneEntities>>,
     time: Res<Time>,
 ) {
     let dt = time.delta_secs();

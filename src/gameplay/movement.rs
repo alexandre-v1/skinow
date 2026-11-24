@@ -1,8 +1,8 @@
 use bevy::prelude::*;
 
 use crate::{
-    AppSystems, IsLocal, PausableSystems,
     gameplay::lane::{MAX_X_POS, MIN_X_POS, MIN_Y_POS},
+    AppSystems, IsLocal, PausableSystems,
 };
 
 pub(super) fn plugin(app: &mut App) {
