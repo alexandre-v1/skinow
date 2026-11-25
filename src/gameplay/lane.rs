@@ -1,11 +1,15 @@
-use bevy::{ecs::template::EntityTemplate, prelude::*, sprite::Anchor};
+use bevy::{
+    ecs::{lifecycle::HookContext, template::EntityTemplate, world::DeferredWorld},
+    prelude::*,
+    sprite::Anchor,
+};
 
 use crate::{
     IsLocal, PausableSystems,
     gameplay::{
         obstacle::{Obstacle, SequenceIndex},
         parallax::{self, LayerInfo},
-        player,
+        player::{self, PlayerDistance},
         speed::{Acceleration, ComputedSpeed, RiskBoost, Speed},
     },
 };
@@ -77,8 +81,19 @@ impl InLaneTemplate {
 #[relationship_target(relationship = InLane)]
 pub struct LaneEntities(Vec<Entity>);
 
-#[derive(Component, Clone, Default, Deref, DerefMut)]
-pub struct Distance(f32);
+#[derive(Component, Clone, Copy, Default, Deref, DerefMut)]
+pub struct Distance(pub f32);
+
+impl Distance {
+    pub fn to_spawn(self) -> SpawnDistance {
+        SpawnDistance(self.0)
+    }
+}
+
+#[derive(Component, Clone, Copy, Default, Deref, DerefMut)]
+#[component(on_add = update_spawn_based_on_distance)]
+#[require(Transform)]
+pub struct SpawnDistance(f32);
 
 pub fn scene(is_local: bool, lane: Entity) -> impl Scene {
     bsn! {
@@ -90,6 +105,7 @@ pub fn scene(is_local: bool, lane: Entity) -> impl Scene {
         }
         RiskBoost
         Distance
+        PlayerDistance
         Visibility
         SequenceIndex
         @local_marker(is_local)
@@ -106,44 +122,54 @@ pub fn scene(is_local: bool, lane: Entity) -> impl Scene {
             --
             @parallax::infinite_layer(LayerInfo {
                 move_ratio: Some(1.0),
-                pos: Vec3::default(),
                 image: "images/ground.png",
                 lane,
+                ..default()
             }, 240.0)
             --
             @parallax::infinite_layer(LayerInfo {
                 move_ratio: Some(0.5),
-                pos: Vec3::new(0.0, 25.0, -50.0),
+                y: 25.0,
+                z: -50.0,
                 image: "images/forest_back.png",
                 lane,
+                ..default()
             }, 240.0)
             --
             @parallax::infinite_layer(LayerInfo {
                 move_ratio: Some(0.6),
-                pos: Vec3::new(0.0, 25.0, -40.0),
+                y: 25.0,
+                z: -40.0,
                 image: "images/forest_front.png",
                 lane,
+                ..default()
             }, 240.0)
             --
             @parallax::layer(LayerInfo {
                 move_ratio : Some(0.10),
-                pos: Vec3::new(240.0, 25.0, -70.0),
+                distance: Distance(240.0),
+                y: 25.0,
+                z: -70.0,
                 image: "images/mountain.png",
                 lane,
             })
             --
             @parallax::layer(LayerInfo {
                 move_ratio: Some(0.025),
-                pos: Vec3::new(230.0, 88.0, -80.0),
+                distance: Distance(230.0),
+                y: 88.0,
+                z: -80.0,
                 image: "images/moon.png",
                 lane,
             })
             --
             @parallax::infinite_layer(LayerInfo {
                 move_ratio: Some(0.2),
-                pos: Vec3::new(0.0, 83.0, -60.0),
+                y: 83.0,
+                z: -60.0,
                 image: "images/cloud.png",
                 lane,
+                ..default()
             }, 300.0)
         ]
     }
@@ -159,6 +185,7 @@ fn local_marker(is_local: bool) -> Box<dyn Scene> {
 fn update_distance(mut query: Query<(&mut Distance, &ComputedSpeed)>, time: Res<Time>) {
     let dt = time.delta_secs();
     for (mut distance, speed) in &mut query {
+        info!("Distance: {}", distance.0.round());
         distance.0 += **speed * dt;
     }
 }
@@ -193,4 +220,16 @@ fn despawn_obstacles(
         }
         commands.entity(entity).despawn();
     }
+}
+
+fn update_spawn_based_on_distance(mut world: DeferredWorld, ctx: HookContext) {
+    let distance = world.get::<SpawnDistance>(ctx.entity).unwrap().0;
+    if let Some(mut transform) = world.get_mut::<Transform>(ctx.entity) {
+        transform.translation.x = distance;
+    };
+
+    world
+        .commands()
+        .entity(ctx.entity)
+        .remove::<SpawnDistance>();
 }

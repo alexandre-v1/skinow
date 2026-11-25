@@ -4,7 +4,7 @@ use crate::{
     AppSystems, IsLocal, PausableSystems,
     asset_tracking::LoadResource,
     gameplay::{
-        lane::{InLane, MAX_X_POS, MIN_X_POS},
+        lane::{Distance, InLane, MAX_X_POS, MIN_X_POS},
         movement::{Dragable, JumpInput, JumpState, MovementController},
         speed::{self, RiskBoost},
     },
@@ -21,7 +21,10 @@ pub(super) fn plugin(app: &mut App) {
             .in_set(PausableSystems),
     );
 
-    app.add_systems(FixedUpdate, update_risk_boost.in_set(PausableSystems));
+    app.add_systems(
+        FixedUpdate,
+        (update_distance, update_risk_boost).in_set(PausableSystems),
+    );
 }
 
 const START_POS_X: f32 = 30.0;
@@ -48,6 +51,9 @@ pub fn scene() -> impl Scene {
 #[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Default, Reflect)]
 #[reflect(Component)]
 struct Player;
+
+#[derive(Component, Clone, Copy, Default)]
+pub struct PlayerDistance(f32);
 
 fn record_player_directional_input(
     input: Res<ButtonInput<KeyCode>>,
@@ -115,5 +121,18 @@ fn update_risk_boost(
         let boost = MAX_RISK_BOOST * t;
 
         **risk = speed::Mod::Add(boost);
+    }
+}
+
+fn update_distance(
+    players: Query<(&Transform, &InLane), With<Player>>,
+    mut lanes: Query<(&mut PlayerDistance, &Distance)>,
+) {
+    for (transform, in_lane) in players {
+        let Ok((mut player_dist, dist)) = lanes.get_mut(in_lane.lane) else {
+            continue;
+        };
+
+        player_dist.0 = **dist + (transform.translation.x - MIN_X_POS);
     }
 }

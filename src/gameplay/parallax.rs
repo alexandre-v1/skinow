@@ -1,6 +1,9 @@
 use bevy::{prelude::*, sprite::Anchor};
 
-use crate::{PausableSystems, gameplay::lane::InLane};
+use crate::{
+    PausableSystems,
+    gameplay::lane::{Distance, InLane},
+};
 
 pub fn plugin(app: &mut App) {
     app.add_systems(Update, recycle_layer_segments.in_set(PausableSystems));
@@ -16,15 +19,30 @@ pub struct ParallaxSegment {
 #[derive(Clone, Copy)]
 pub struct LayerInfo {
     pub move_ratio: Option<f32>,
-    pub pos: Vec3,
+    pub distance: Distance,
+    pub y: f32,
+    pub z: f32,
     pub image: &'static str,
     pub lane: Entity,
 }
 
 impl LayerInfo {
-    fn with_x(mut self, x: f32) -> Self {
-        self.pos = self.pos.with_x(x);
+    fn add_distance(mut self, distance: f32) -> Self {
+        self.distance.0 += distance;
         self
+    }
+}
+
+impl Default for LayerInfo {
+    fn default() -> Self {
+        Self {
+            move_ratio: Some(1.0),
+            distance: Distance::default(),
+            y: 0.0,
+            z: 0.0,
+            image: "",
+            lane: Entity::PLACEHOLDER,
+        }
     }
 }
 
@@ -38,12 +56,12 @@ pub fn infinite_layer(info: LayerInfo, width: f32) -> impl Scene {
                 width
             }
             --
-            @layer(info.with_x(width))
+            @layer(info.add_distance(width))
             ParallaxSegment {
                 width
             }
             --
-            @layer(info.with_x(width * 2.0))
+            @layer(info.add_distance(width * 2.0))
             ParallaxSegment {
                 width
             }
@@ -63,7 +81,8 @@ pub fn layer(info: LayerInfo) -> impl Scene {
         }
         Sprite { image }
         Anchor::BOTTOM_LEFT
-        Transform::from_translation(info.pos)
+        Transform::from_xyz(0.0, info.y, info.z)
+        info.distance.to_spawn()
     }
 }
 
