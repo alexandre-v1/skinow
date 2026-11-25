@@ -1,13 +1,13 @@
 use bevy::{ecs::template::EntityTemplate, prelude::*, sprite::Anchor};
 
 use crate::{
+    IsLocal, PausableSystems,
     gameplay::{
         obstacle::{Obstacle, SequenceIndex},
         parallax::{self, LayerInfo},
         player,
         speed::{Acceleration, ComputedSpeed, RiskBoost, Speed},
     },
-    IsLocal, PausableSystems,
 };
 
 pub fn plugin(app: &mut App) {
